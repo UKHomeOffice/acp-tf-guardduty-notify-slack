@@ -38,25 +38,22 @@ def notify_slack(message):
     slack_username = os.environ['SLACK_USERNAME']
     slack_emoji = os.environ['SLACK_EMOJI']
 
-    message = json.loads(message)
-
     payload = {
         "channel": slack_channel,
         "username": slack_username,
         "icon_emoji": slack_emoji,
-        "text": message['detail']['title'],
+        "text": "Duplicate - " + message['title'],
         "attachments": [
             {
                 "fallback": "Something",
-                "color": alert_severity_color(message['detail']['severity']),
+                "color": alert_severity_color(message['severity']),
                 "text": make_message_text(
                     region=message['region'],
-                    account=message['detail']['accountId'],
-                    severity=alert_severity_name(message["detail"]["severity"]),
+                    account=message['accountId'],
+                    severity=alert_severity_name(message["severity"]),
                 ),
             }
         ]
-
     }
 
     data = urllib.parse.urlencode({"payload": json.dumps(payload)}).encode("utf-8")
@@ -64,9 +61,21 @@ def notify_slack(message):
     urllib.request.urlopen(req, data)
     return decrypt
 
+def get_guardduty_event(bucket, key):
+    s3_client = boto3.client('s3')
+    response = s3_client.get_object(
+        Bucket=bucket,
+        Key=key
+    )
+
+    return json.loads(response['Body'].read().decode('utf-8'))
 
 def lambda_handler(event, context):
-    message = event['Records'][0]['Sns']['Message']
-    notify_slack(message)
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
 
-    return message
+    for record in event['Records']:
+      guardduty_event = get_guardduty_event(record['s3']['bucket']['name'], record['s3']['object']['key'])
+      notify_slack(guardduty_event)
+
+    return
