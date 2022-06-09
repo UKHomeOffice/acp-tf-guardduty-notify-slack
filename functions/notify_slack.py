@@ -66,6 +66,8 @@ def notify_slack(message):
 
 
 def lambda_handler(event, context):
+    logging.info(event)
+    return
     message = event['Records'][0]['Sns']['Message']
     notify_slack(message)
 
