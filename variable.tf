@@ -29,4 +29,4 @@ variable "kms_key_arn" {
   default     = ""
 }
 
-variable "bucket_arn" {}
+variable "bucket" {}

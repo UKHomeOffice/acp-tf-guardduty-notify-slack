@@ -1,3 +1,7 @@
+data "aws_s3_bucket" "guardduty" {
+  bucket = var.bucket
+}
+
 data "aws_iam_policy_document" "assume_role" {
   statement {
     effect = "Allow"
@@ -13,12 +17,20 @@ data "aws_iam_policy_document" "assume_role" {
 
 data "aws_iam_policy_document" "lambda" {
   statement {
+    actions = [
+      "s3:GetObject",
+    ]
+
+    resources = [
+      "${data.aws_s3_bucket.guardduty.arn}/*"
+    ]
+  }
+  statement {
     sid = "AllowWriteToCloudwatchLogs"
 
     effect = "Allow"
 
     actions = [
-      "logs:CreateLogStream",
       "logs:PutLogEvents",
     ]
     resources = ["${aws_cloudwatch_log_group.lambda_function.arn}:*"]

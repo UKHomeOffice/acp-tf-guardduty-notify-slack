@@ -10,11 +10,11 @@ resource "aws_lambda_permission" "allow_bucket" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.notify_slack.arn
   principal     = "s3.amazonaws.com"
-  source_arn    = var.bucket_arn
+  source_arn    = data.aws_s3_bucket.guardduty.arn
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
-  bucket = var.bucket_arn
+  bucket = var.bucket
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.notify_slack.arn
