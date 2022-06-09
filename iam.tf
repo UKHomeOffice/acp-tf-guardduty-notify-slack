@@ -32,8 +32,12 @@ data "aws_iam_policy_document" "lambda" {
 
     actions = [
       "logs:PutLogEvents",
+      "logs:CreateLogStream"
     ]
-    resources = ["${aws_cloudwatch_log_group.lambda_function.arn}:*"]
+    resources = [
+      "${aws_cloudwatch_log_group.lambda_function.arn}:*",
+      "${aws_cloudwatch_log_group.lambda_function.arn}:log-stream:*"
+    ]
   }
   statement {
     sid = "AllowKMSDecrypt"
