@@ -1,8 +1,0 @@
-{
-  "detail-type": [
-    "GuardDuty Finding"
-  ],
-  "source": [
-    "aws.guardduty"
-  ]
-}
