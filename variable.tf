@@ -1,18 +1,3 @@
-variable "create" {
-  description = "Whether to create all resources"
-  default     = true
-}
-
-variable "create_sns_topic" {
-  description = "Whether to create new SNS topic"
-  default     = true
-}
-
-variable "create_with_kms_key" {
-  description = "Whether to create resources with KMS encryption"
-  default     = false
-}
-
 variable "lambda_function_name" {
   description = "The name of the Lambda function to create"
   default     = "guardduty_notify_slack"

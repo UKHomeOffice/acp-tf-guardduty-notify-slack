@@ -28,8 +28,6 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
 
 #  the path the python or node.js file is stored in the directory
 data "archive_file" "notify_slack" {
-  count = var.create ? 1 : 0
-
   type        = "zip"
   source_file = local.lambda_filename
   output_path = local.lambda_archive_filename
@@ -42,15 +40,13 @@ resource "aws_cloudwatch_log_group" "lambda_function" {
 }
 
 resource "aws_lambda_function" "notify_slack" {
-  count = var.create ? 1 : 0
-
-  filename = data.archive_file.notify_slack[0].output_path
+  filename = data.archive_file.notify_slack.output_path
 
   function_name = var.lambda_function_name
 
-  role             = aws_iam_role.lambda[0].arn
+  role             = aws_iam_role.lambda.arn
   handler          = "notify_slack.lambda_handler"
-  source_code_hash = data.archive_file.notify_slack[0].output_base64sha256
+  source_code_hash = data.archive_file.notify_slack.output_base64sha256
   runtime          = "python3.6"
   timeout          = 30
 
@@ -71,7 +67,7 @@ resource "aws_lambda_function" "notify_slack" {
   }
 
   depends_on = [
-    data.archive_file.notify_slack[0],
+    data.archive_file.notify_slack,
     aws_cloudwatch_log_group.lambda_function
   ]
 }
