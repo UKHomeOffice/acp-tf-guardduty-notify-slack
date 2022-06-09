@@ -70,19 +70,8 @@ resource "aws_lambda_function" "notify_slack" {
     ]
   }
 
-  depends_on = [data.archive_file.notify_slack[0],
-  aws_cloudwatch_log_group.lambda_function]
-}
-
-resource "aws_cloudwatch_event_rule" "guard_duty_findings_to_slack" {
-  name        = "guardduty-finding-events"
-  description = "AWS GuardDuty event findings"
-
-  event_pattern = file("${path.module}/event-pattern.json")
-}
-
-resource "aws_cloudwatch_event_target" "guard_duty_findings_to_slack" {
-  rule      = aws_cloudwatch_event_rule.guard_duty_findings_to_slack.name
-  target_id = "slack-topic"
-  arn       = aws_sns_topic.topic[0].arn
+  depends_on = [
+    data.archive_file.notify_slack[0],
+    aws_cloudwatch_log_group.lambda_function
+  ]
 }
