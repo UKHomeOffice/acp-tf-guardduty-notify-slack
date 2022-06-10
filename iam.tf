@@ -1,5 +1,5 @@
 data "aws_s3_bucket" "guardduty" {
-  bucket = var.bucket
+  bucket = var.bucket_name
 }
 
 data "aws_iam_policy_document" "assume_role" {
