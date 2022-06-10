@@ -73,6 +73,7 @@ resource "aws_lambda_function" "notify_slack" {
 
 
 ### Alerts
+
 resource "aws_sns_topic" "alert" {
   count = length(var.alert_emails) > 0 ? 1 : 0
   name  = "lambda-${var.lambda_function_name}-error"
@@ -97,6 +98,7 @@ resource "aws_cloudwatch_metric_alarm" "errorRate" {
   statistic                 = "Maximum"
   threshold                 = "0"
   insufficient_data_actions = []
+  alarm_actions             = aws_sns_topic.alert[0].arn
   dimensions = {
     FunctionName = var.lambda_function_name
   }
