@@ -74,7 +74,7 @@ resource "aws_lambda_function" "notify_slack" {
 
 ### Alerts
 resource "aws_sns_topic" "alert" {
-  count = length(var.alert_email) > 0 ? 1 : 0
+  count = length(var.alert_emails) > 0 ? 1 : 0
   name  = "lambda-${var.lambda_function_name}-error"
 }
 
@@ -86,7 +86,7 @@ resource "aws_sns_topic_subscription" "alert-email" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "errorRate" {
-  count                     = length(var.alert_email) > 0 ? 1 : 0
+  count                     = length(var.alert_emails) > 0 ? 1 : 0
   alarm_name                = "lambda-${var.lambda_function_name}-error"
   alarm_description         = "Alarm to detect errors in the GuardDuty Lambda"
   comparison_operator       = "GreaterThanThreshold"
