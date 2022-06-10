@@ -70,3 +70,34 @@ resource "aws_lambda_function" "notify_slack" {
     aws_cloudwatch_log_group.lambda_function
   ]
 }
+
+
+### Alerts
+resource "aws_sns_topic" "alert" {
+  count = length(var.alert_email) > 0 ? 1 : 0
+  name  = "lambda-${var.lambda_function_name}-error"
+}
+
+resource "aws_sns_topic_subscription" "alert-email" {
+  for_each  = toset(var.alert_emails)
+  topic_arn = aws_sns_topic.alert[0].arn
+  protocol  = "email"
+  endpoint  = each.value
+}
+
+resource "aws_cloudwatch_metric_alarm" "errorRate" {
+  count                     = length(var.alert_email) > 0 ? 1 : 0
+  alarm_name                = "lambda-${var.lambda_function_name}-error"
+  alarm_description         = "Alarm to detect errors in the GuardDuty Lambda"
+  comparison_operator       = "GreaterThanThreshold"
+  evaluation_periods        = "1"
+  metric_name               = "Errors"
+  namespace                 = "AWS/Lambda"
+  period                    = "60"
+  statistic                 = "Maximum"
+  threshold                 = "0"
+  insufficient_data_actions = []
+  dimensions = {
+    FunctionName = var.lambda_function_name
+  }
+}
