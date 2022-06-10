@@ -46,7 +46,7 @@ data "aws_iam_policy_document" "lambda" {
 
     actions = ["kms:Decrypt"]
 
-    resources = ["*"]
+    resources = [var.kms_key_arn]
   }
 }
 
