@@ -3,10 +3,6 @@ variable "lambda_function_name" {
   default     = "guardduty_notify_slack"
 }
 
-variable "sns_topic_name" {
-  description = "The name of the SNS topic to create"
-}
-
 variable "slack_webhook_url" {
   description = "The URL of the  Slack webhook"
 }
