@@ -1,4 +1,4 @@
-import os, boto3, json, base64
+import os, boto3, json, base64, gzip
 import urllib.request, urllib.parse
 import logging
 
@@ -67,15 +67,23 @@ def get_guardduty_event(bucket, key):
         Bucket=bucket,
         Key=key
     )
-
-    return json.loads(response['Body'].read().decode('utf-8'))
+    
+    object_bytes = response['Body'].read()
+    object_string = gzip.decompress(object_bytes).decode('utf-8')
+    
+    return json.loads(object_string)
 
 def lambda_handler(event, context):
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
+    
+    logger.info("s3 event:")
+    logger.info(event)
 
     for record in event['Records']:
       guardduty_event = get_guardduty_event(record['s3']['bucket']['name'], record['s3']['object']['key'])
+      logger.info("GuardDuty event:")
+      logger.info(guardduty_event)
       notify_slack(guardduty_event)
 
     return
