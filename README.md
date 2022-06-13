@@ -1,3 +1,30 @@
+# acp-tf-guardduty-notify-slack
+
+This module creates a Lambda that gets notified on new GuardDuty log files being created in the S3 bucket and alerts Slack.
+
+
+## Upgrade notes - v2
+
+Version 1 worked through CloudWatch rule events with a corresponding lambda being configured into each region. This means there were 17 duplicate resources for all the regions.
+Version 2 has been made to be notified of the logs from the central S3 bucket, which means only one lambda and no work is needed to add regions. In order to upgrade a bucket name is required.
+
+
+## Example Usage
+
+```
+module "notify_slack" {
+  source = "git::https://github.com/UKHomeOffice/acp-tf-guardduty-notify-slack?ref=v2.0.0.alpha10"
+
+  slack_webhook_url    = var.slack_webhook
+  slack_channel        = "GuardDuty-ALerts"
+  slack_username       = "testing"
+  kms_key_arn          = "arn:aws:kms:eu-west-2:XXXX:key/XXX"
+  bucket_name          = "guardduty-bucket"
+  alert_emails         = ["alerts@example.com"]
+  lambda_function_name = "guardduty_notify_slack"
+}
+```
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
