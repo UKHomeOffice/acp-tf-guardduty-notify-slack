@@ -22,7 +22,7 @@ resource "aws_lambda_function" "notify_slack" {
   role             = aws_iam_role.lambda.arn
   handler          = "notify_slack.lambda_handler"
   source_code_hash = data.archive_file.notify_slack.output_base64sha256
-  runtime          = "python3.6"
+  runtime          = "python3.9"
   timeout          = 30
 
   environment {
