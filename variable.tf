@@ -20,12 +20,16 @@ variable "slack_emoji" {
   default     = ":aws:"
 }
 
-variable "kms_key_arn" {
-  description = "ARN of the KMS key used for decrypting slack webhook url"
+variable "lambda_variable_kms_key" {
+  description = "ARN of the KM keys used for decryption of lambda variables"
 }
 
 variable "bucket_name" {
   description = "Bucket name of GuardDuty event logs"
+}
+
+variable "bucket_kms_key" {
+  description = "KMS key arn used to decrypt the GuardDuty s3 events"
 }
 
 variable "alert_emails" {

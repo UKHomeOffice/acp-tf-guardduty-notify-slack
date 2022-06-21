@@ -13,15 +13,16 @@ Version 2 has been made to be notified of the logs from the central S3 bucket, w
 
 ```
 module "notify_slack" {
-  source = "git::https://github.com/UKHomeOffice/acp-tf-guardduty-notify-slack?ref=v2.0.0.alpha10"
+  source = "git::https://github.com/UKHomeOffice/acp-tf-guardduty-notify-slack?ref=v2.1.1"
 
-  slack_webhook_url    = var.slack_webhook
-  slack_channel        = "GuardDuty-ALerts"
-  slack_username       = "testing"
-  kms_key_arn          = "arn:aws:kms:eu-west-2:XXXX:key/XXX"
-  bucket_name          = "guardduty-bucket"
-  alert_emails         = ["alerts@example.com"]
-  lambda_function_name = "guardduty_notify_slack"
+  slack_webhook_url              = var.slack_webhook
+  slack_channel                  = "GuardDuty-ALerts"
+  slack_username                 = "testing"
+  lambda_variable_kms_key        = "arn:aws:kms:eu-west-2:XXXX:key/XXX"
+  bucket_name                    = "guardduty-bucket"
+  bucket_kms_key                 = "arn:aws:kms:eu-west-2:XXXX:key/XXX"
+  alert_emails                   = ["alerts@example.com"]
+  lambda_function_name           = "guardduty_notify_slack"
 }
 ```
 
@@ -68,9 +69,10 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_alert_emails"></a> [alert\_emails](#input\_alert\_emails) | Emails to alert on if there is an error in the lambda | `list` | `[]` | no |
+| <a name="input_bucket_kms_key"></a> [bucket\_kms\_key](#input\_bucket\_kms\_key) | KMS key arn used to decrypt the GuardDuty s3 events | `any` | n/a | yes |
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | Bucket name of GuardDuty event logs | `any` | n/a | yes |
-| <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | ARN of the KMS key used for decrypting slack webhook url | `any` | n/a | yes |
 | <a name="input_lambda_function_name"></a> [lambda\_function\_name](#input\_lambda\_function\_name) | The name of the Lambda function to create | `string` | `"guardduty_notify_slack"` | no |
+| <a name="input_lambda_variable_kms_key"></a> [lambda\_variable\_kms\_key](#input\_lambda\_variable\_kms\_key) | ARN of the KM keys used for decryption of lambda variables | `any` | n/a | yes |
 | <a name="input_slack_channel"></a> [slack\_channel](#input\_slack\_channel) | The name of the channel in Slack for notifications | `any` | n/a | yes |
 | <a name="input_slack_emoji"></a> [slack\_emoji](#input\_slack\_emoji) | A custom emoji that will appear on Slack messages | `string` | `":aws:"` | no |
 | <a name="input_slack_username"></a> [slack\_username](#input\_slack\_username) | The username that will appear on Slack messages | `any` | n/a | yes |
