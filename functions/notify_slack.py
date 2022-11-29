@@ -72,38 +72,36 @@ def notify_slack(payload):
     return result
 
 
-def get_guardduty_event(bucket, key):
+def get_guardduty_events(bucket, key):
     s3_client = boto3.client("s3")
     response = s3_client.get_object(Bucket=bucket, Key=key)
 
     object_bytes = response["Body"].read()
     object_string = gzip.decompress(object_bytes).decode("utf-8")
-
-    return json.loads(object_string)
-
+    object_lines = object_string.splitlines()
+    
+    return [json.loads(line) for line in object_lines]
 
 def lambda_handler(event, context):
-    logger.info("s3 event:")
-    logger.info(event)
+    logger.info(f's3 event: {event}')
 
     for record in event["Records"]:
         if record["eventName"] == "Replication:OperationFailedReplication":
             logger.info("S3 replication failed")
             notify_slack({"text": "Replication failed"})
         elif record["eventName"] == "ObjectCreated:Put":
-            guardduty_event = get_guardduty_event(
+            guardduty_events_list = get_guardduty_events(
                 record["s3"]["bucket"]["name"], record["s3"]["object"]["key"]
             )
-            logger.info("GuardDuty event:")
-            logger.info(guardduty_event)
-            if "sample" in guardduty_event["service"]["additionalInfo"] and guardduty_event["service"]["additionalInfo"]["sample"] == True:
-                logger.info("SAMPLE EVENT")
-                guardduty_event["title"] = "[SAMPLE EVENT]" + guardduty_event["title"]
-                if "IGNORE_SAMPLE_EVENTS" in os.environ and os.environ["IGNORE_SAMPLE_EVENTS"] == "true":
-                    logger.info("SAMPLE EVENT SKIPPED")
-                    continue 
-            alert_payload = make_guardduty_alert_payload(guardduty_event)
-            result = notify_slack(alert_payload)
-            logger.info("HTTP Result:")
-            logger.info(result)
+            for guardduty_event in guardduty_events_list:
+                logger.info(f'GuardDuty Event: {guardduty_event}')
+                if "sample" in guardduty_event["service"]["additionalInfo"] and guardduty_event["service"]["additionalInfo"]["sample"] == True:
+                    logger.info("IS SAMPLE EVENT")
+                    guardduty_event["title"] = "[SAMPLE EVENT]" + guardduty_event["title"]
+                    if "IGNORE_SAMPLE_EVENTS" in os.environ and os.environ["IGNORE_SAMPLE_EVENTS"] == "true":
+                        logger.info("SAMPLE EVENT SKIPPED")
+                        continue 
+                alert_payload = make_guardduty_alert_payload(guardduty_event)
+                result = notify_slack(alert_payload)
+                logger.info(f'HTTP Result: + {result}')
     return
