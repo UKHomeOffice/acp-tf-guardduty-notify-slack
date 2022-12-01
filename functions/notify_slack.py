@@ -71,15 +71,14 @@ def notify_slack(payload):
     result = urllib.request.urlopen(req, data).read()
     return result
 
-
-def get_guardduty_events(bucket, key):
+def get_s3_object(bucket, key):
     s3_client = boto3.client("s3")
     response = s3_client.get_object(Bucket=bucket, Key=key)
+    return response["Body"].read()
 
-    object_bytes = response["Body"].read()
+def get_guardduty_events(object_bytes):
     object_string = gzip.decompress(object_bytes).decode("utf-8")
     object_lines = object_string.splitlines()
-    
     return [json.loads(line) for line in object_lines]
 
 def lambda_handler(event, context):
@@ -91,7 +90,7 @@ def lambda_handler(event, context):
             notify_slack({"text": "Replication failed"})
         elif record["eventName"] == "ObjectCreated:Put":
             guardduty_events_list = get_guardduty_events(
-                record["s3"]["bucket"]["name"], record["s3"]["object"]["key"]
+                get_s3_object(record["s3"]["bucket"]["name"], record["s3"]["object"]["key"])
             )
             for guardduty_event in guardduty_events_list:
                 logger.info(f'GuardDuty Event: {guardduty_event}')
