@@ -20,4 +20,14 @@ steps:
     - pull_request
     - push
 
-...
+- name: unit_tests
+  pull: if-not-exists
+  image: python:3.9-slim-buster
+  commands:
+  - cd test
+  - pip install boto3
+  - python test.py
+  when:
+    event:
+    - pull_request
+    - push
