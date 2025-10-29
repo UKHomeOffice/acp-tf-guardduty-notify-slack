@@ -94,6 +94,18 @@ def lambda_handler(event, context):
             )
             for guardduty_event in guardduty_events_list:
                 logger.info(f'GuardDuty Event: {guardduty_event}')
+
+                # Check if finding type should be ignored (only done for LOW severity events).
+                # Prevents spamming the Slack channel with LOW severity events that don't need to be investigated.
+                ignored_types = os.environ.get("IGNORED_FINDING_TYPES", "").split(",")
+                ignored_types = [t.strip() for t in ignored_types if t.strip()]
+                finding_type = guardduty_event.get("type", "")
+                severity = guardduty_event.get("severity", 0)
+
+                if finding_type in ignored_types and severity < 4.0:
+                    logger.info(f'Finding type {finding_type} with LOW severity ({severity}) is in the ignored list. Skipping.')
+                    continue
+
                 if "sample" in guardduty_event["service"]["additionalInfo"] and guardduty_event["service"]["additionalInfo"]["sample"] == True:
                     logger.info("IS SAMPLE EVENT")
                     guardduty_event["title"] = "[SAMPLE EVENT]" + guardduty_event["title"]

@@ -33,14 +33,14 @@ module "notify_slack" {
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_archive"></a> [archive](#requirement\_archive) | ~> 2.2 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 3.70 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 6.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_archive"></a> [archive](#provider\_archive) | 2.2.0 |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.72.0 |
+| <a name="provider_archive"></a> [archive](#provider\_archive) | 2.7.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.18.0 |
 
 ## Modules
 
@@ -72,6 +72,7 @@ No modules.
 | <a name="input_bucket_kms_key"></a> [bucket\_kms\_key](#input\_bucket\_kms\_key) | KMS key arn used to decrypt the GuardDuty s3 events | `any` | n/a | yes |
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | Bucket name of GuardDuty event logs | `any` | n/a | yes |
 | <a name="input_ignore_sample_events"></a> [ignore\_sample\_events](#input\_ignore\_sample\_events) | Flag to toggle whether to ignore sample events | `string` | `"false"` | no |
+| <a name="input_ignored_finding_types"></a> [ignored\_finding\_types](#input\_ignored\_finding\_types) | Comma-separated list of GuardDuty finding types to ignore | `string` | `"Recon:EC2/PortProbeUnprotectedPort"` | no |
 | <a name="input_lambda_function_name"></a> [lambda\_function\_name](#input\_lambda\_function\_name) | The name of the Lambda function to create | `string` | `"guardduty_notify_slack"` | no |
 | <a name="input_lambda_variable_kms_key"></a> [lambda\_variable\_kms\_key](#input\_lambda\_variable\_kms\_key) | ARN of the KM keys used for decryption of lambda variables | `any` | n/a | yes |
 | <a name="input_slack_channel"></a> [slack\_channel](#input\_slack\_channel) | The name of the channel in Slack for notifications | `any` | n/a | yes |

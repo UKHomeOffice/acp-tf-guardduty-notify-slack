@@ -22,16 +22,17 @@ resource "aws_lambda_function" "notify_slack" {
   role             = aws_iam_role.lambda.arn
   handler          = "notify_slack.lambda_handler"
   source_code_hash = data.archive_file.notify_slack.output_base64sha256
-  runtime          = "python3.9"
+  runtime          = "python3.13"
   timeout          = 30
 
   environment {
     variables = {
-      SLACK_WEBHOOK_URL    = var.slack_webhook_url
-      SLACK_CHANNEL        = var.slack_channel
-      SLACK_USERNAME       = var.slack_username
-      SLACK_EMOJI          = var.slack_emoji
-      IGNORE_SAMPLE_EVENTS = var.ignore_sample_events
+      SLACK_WEBHOOK_URL     = var.slack_webhook_url
+      SLACK_CHANNEL         = var.slack_channel
+      SLACK_USERNAME        = var.slack_username
+      SLACK_EMOJI           = var.slack_emoji
+      IGNORE_SAMPLE_EVENTS  = var.ignore_sample_events
+      IGNORED_FINDING_TYPES = var.ignored_finding_types
     }
   }
 
