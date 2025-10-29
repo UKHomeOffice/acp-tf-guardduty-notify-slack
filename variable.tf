@@ -41,3 +41,8 @@ variable "alert_emails" {
   description = "Emails to alert on if there is an error in the lambda"
   default     = []
 }
+
+variable "ignored_finding_types" {
+  description = "Comma-separated list of GuardDuty finding types to ignore"
+  default     = "Recon:EC2/PortProbeUnprotectedPort"
+}
