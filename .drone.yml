@@ -22,7 +22,7 @@ steps:
 
 - name: unit_tests
   pull: if-not-exists
-  image: python:3.9-slim-buster
+  image: python:3.11-slim-buster
   commands:
   - cd test
   - pip install boto3
