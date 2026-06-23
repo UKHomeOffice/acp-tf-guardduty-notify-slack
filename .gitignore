@@ -1,2 +1,3 @@
 .terraform
 providers.tf
+terraform.tfvars
