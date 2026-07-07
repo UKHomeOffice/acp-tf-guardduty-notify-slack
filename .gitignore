@@ -1,2 +1,4 @@
 .terraform
 providers.tf
+terraform.tfvars
+.terraform.lock.hcl
