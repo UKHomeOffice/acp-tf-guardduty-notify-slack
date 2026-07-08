@@ -13,7 +13,7 @@ steps:
   image: quay.io/ukhomeofficedigital/terraform-toolset:v1.1.3-2
   commands:
   - mv __providers__._tf_ providers.tf
-  - /acp/scripts/tf-validate.sh
+  - /acp/scripts/tf-validate.sh --no-docs
   - mv providers.tf __providers__._tf_
   when:
     event:
