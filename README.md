@@ -30,7 +30,7 @@ module "notify_slack" {
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_archive"></a> [archive](#requirement\_archive) | ~> 2.2 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.70 |
@@ -38,9 +38,9 @@ module "notify_slack" {
 ## Providers
 
 | Name | Version |
-|------|---------|
-| <a name="provider_archive"></a> [archive](#provider\_archive) | 2.7.1 |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.18.0 |
+| ---- | ------- |
+| <a name="provider_archive"></a> [archive](#provider\_archive) | ~> 2.2 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.70 |
 
 ## Modules
 
@@ -49,7 +49,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_cloudwatch_log_group.lambda_function](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
 | [aws_cloudwatch_metric_alarm.errorRate](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_metric_alarm) | resource |
 | [aws_iam_role.lambda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
@@ -67,7 +67,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_alert_emails"></a> [alert\_emails](#input\_alert\_emails) | Emails to alert on if there is an error in the lambda | `list` | `[]` | no |
 | <a name="input_bucket_kms_key"></a> [bucket\_kms\_key](#input\_bucket\_kms\_key) | KMS key arn used to decrypt the GuardDuty s3 events | `any` | n/a | yes |
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | Bucket name of GuardDuty event logs | `any` | n/a | yes |

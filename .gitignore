@@ -1,2 +1,5 @@
 .terraform
 providers.tf
+terraform.tfvars
+.terraform.lock.hcl
+__pycache__/
