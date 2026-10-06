@@ -42,6 +42,11 @@ variable "alert_emails" {
   default     = []
 }
 
+variable "high_severity_alert_emails" {
+  description = "Emails to send HIGH severity GuardDuty findings to"
+  default     = []
+}
+
 variable "ignored_finding_types" {
   description = "Comma-separated list of GuardDuty finding types to ignore"
   default     = "Recon:EC2/PortProbeUnprotectedPort"

@@ -71,6 +71,56 @@ def notify_slack(payload):
     result = urllib.request.urlopen(req, data).read()
     return result
 
+def make_guardduty_email(guardduty_event):
+    severity = alert_severity_name(guardduty_event["severity"])
+    region = guardduty_event["region"]
+    resource = guardduty_event["resource"]
+    action = guardduty_event["service"].get("action", {})
+
+    lines = [
+        guardduty_event["title"],
+        "",
+        f"Severity: {severity} ({guardduty_event['severity']})",
+        f"Type: {guardduty_event['type']}",
+        f"Account: {guardduty_event['accountId']}",
+        f"Region: {region}",
+        f"Resource: {resource['resourceType']}",
+    ]
+
+    access_key = resource.get("accessKeyDetails", {})
+    if access_key.get("userName"):
+        lines.append(f"User: {access_key['userName']}")
+    if access_key.get("accessKeyId"):
+        lines.append(f"Access key: {access_key['accessKeyId']}")
+    if "instanceDetails" in resource:
+        lines.append(f"Instance: {resource['instanceDetails']['instanceId']}")
+    for bucket in resource.get("s3BucketDetails", []):
+        lines.append(f"Bucket: {bucket['name']}")
+
+    if "awsApiCallAction" in action:
+        lines.append(f"API call: {action['awsApiCallAction']['api']}")
+    for action_type in ["awsApiCallAction", "networkConnectionAction"]:
+        remote_ip = action.get(action_type, {}).get("remoteIpDetails")
+        if remote_ip:
+            country = (remote_ip.get("country") or {}).get("countryName")
+            lines.append(f"Remote IP: {remote_ip['ipAddressV4']} ({country})")
+
+    lines += [
+        "", guardduty_event["description"], "",
+        f"https://{region}.console.aws.amazon.com/guardduty/home?region={region}#/findings?macros=current&fId={guardduty_event['id']}",
+    ]
+
+    subject = f"GuardDuty {severity}: {guardduty_event['title']}"[:100]
+    return subject, "\n".join(lines)
+
+def notify_email(subject, message):
+    sns_client = boto3.client("sns")
+    return sns_client.publish(
+        TopicArn=os.environ["HIGH_SEVERITY_SNS_TOPIC_ARN"],
+        Subject=subject,
+        Message=message,
+    )
+
 def get_s3_object(bucket, key):
     s3_client = boto3.client("s3")
     response = s3_client.get_object(Bucket=bucket, Key=key)
@@ -115,4 +165,9 @@ def lambda_handler(event, context):
                 alert_payload = make_guardduty_alert_payload(guardduty_event)
                 result = notify_slack(alert_payload)
                 logger.info(f'HTTP Result: + {result}')
+
+                if severity >= 7.0 and os.environ.get("HIGH_SEVERITY_SNS_TOPIC_ARN"):
+                    subject, message = make_guardduty_email(guardduty_event)
+                    result = notify_email(subject, message)
+                    logger.info(f'SNS Result: {result}')
     return

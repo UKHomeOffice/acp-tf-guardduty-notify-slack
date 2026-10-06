@@ -27,12 +27,13 @@ resource "aws_lambda_function" "notify_slack" {
 
   environment {
     variables = {
-      SLACK_WEBHOOK_URL     = var.slack_webhook_url
-      SLACK_CHANNEL         = var.slack_channel
-      SLACK_USERNAME        = var.slack_username
-      SLACK_EMOJI           = var.slack_emoji
-      IGNORE_SAMPLE_EVENTS  = var.ignore_sample_events
-      IGNORED_FINDING_TYPES = var.ignored_finding_types
+      SLACK_WEBHOOK_URL           = var.slack_webhook_url
+      SLACK_CHANNEL               = var.slack_channel
+      SLACK_USERNAME              = var.slack_username
+      SLACK_EMOJI                 = var.slack_emoji
+      IGNORE_SAMPLE_EVENTS        = var.ignore_sample_events
+      IGNORED_FINDING_TYPES       = var.ignored_finding_types
+      HIGH_SEVERITY_SNS_TOPIC_ARN = length(var.high_severity_alert_emails) > 0 ? aws_sns_topic.high_severity_alert[0].arn : ""
     }
   }
 
@@ -81,6 +82,19 @@ resource "aws_sns_topic" "alert" {
 resource "aws_sns_topic_subscription" "alert-email" {
   for_each  = toset(var.alert_emails)
   topic_arn = aws_sns_topic.alert[0].arn
+  protocol  = "email"
+  endpoint  = each.value
+}
+
+resource "aws_sns_topic" "high_severity_alert" {
+  count        = length(var.high_severity_alert_emails) > 0 ? 1 : 0
+  name         = "lambda-${var.lambda_function_name}-high-severity"
+  display_name = "ACP GuardDuty"
+}
+
+resource "aws_sns_topic_subscription" "high-severity-alert-email" {
+  for_each  = toset(var.high_severity_alert_emails)
+  topic_arn = aws_sns_topic.high_severity_alert[0].arn
   protocol  = "email"
   endpoint  = each.value
 }
