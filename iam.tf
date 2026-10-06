@@ -51,6 +51,19 @@ data "aws_iam_policy_document" "lambda" {
       var.bucket_kms_key
     ]
   }
+  dynamic "statement" {
+    for_each = aws_sns_topic.high_severity_alert
+
+    content {
+      sid = "AllowPublishHighSeverityAlerts"
+
+      effect = "Allow"
+
+      actions = ["sns:Publish"]
+
+      resources = [statement.value.arn]
+    }
+  }
 }
 
 

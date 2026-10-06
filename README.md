@@ -22,6 +22,7 @@ module "notify_slack" {
   bucket_name                    = "guardduty-bucket"
   bucket_kms_key                 = "arn:aws:kms:eu-west-2:XXXX:key/XXX"
   alert_emails                   = ["alerts@example.com"]
+  high_severity_alert_emails     = ["security@example.com"]
   lambda_function_name           = "guardduty_notify_slack"
 }
 ```
@@ -58,7 +59,9 @@ No modules.
 | [aws_lambda_permission.allow_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_permission) | resource |
 | [aws_s3_bucket_notification.bucket_notification](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_notification) | resource |
 | [aws_sns_topic.alert](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
+| [aws_sns_topic.high_severity_alert](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
 | [aws_sns_topic_subscription.alert-email](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_subscription) | resource |
+| [aws_sns_topic_subscription.high-severity-alert-email](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_subscription) | resource |
 | [archive_file.notify_slack](https://registry.terraform.io/providers/hashicorp/archive/latest/docs/data-sources/file) | data source |
 | [aws_iam_policy_document.assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.lambda](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -71,6 +74,7 @@ No modules.
 | <a name="input_alert_emails"></a> [alert\_emails](#input\_alert\_emails) | Emails to alert on if there is an error in the lambda | `list` | `[]` | no |
 | <a name="input_bucket_kms_key"></a> [bucket\_kms\_key](#input\_bucket\_kms\_key) | KMS key arn used to decrypt the GuardDuty s3 events | `any` | n/a | yes |
 | <a name="input_bucket_name"></a> [bucket\_name](#input\_bucket\_name) | Bucket name of GuardDuty event logs | `any` | n/a | yes |
+| <a name="input_high_severity_alert_emails"></a> [high\_severity\_alert\_emails](#input\_high\_severity\_alert\_emails) | Emails to send HIGH severity GuardDuty findings to | `list` | `[]` | no |
 | <a name="input_ignore_sample_events"></a> [ignore\_sample\_events](#input\_ignore\_sample\_events) | Flag to toggle whether to ignore sample events | `string` | `"false"` | no |
 | <a name="input_ignored_finding_types"></a> [ignored\_finding\_types](#input\_ignored\_finding\_types) | Comma-separated list of GuardDuty finding types to ignore | `string` | `"Recon:EC2/PortProbeUnprotectedPort"` | no |
 | <a name="input_lambda_function_name"></a> [lambda\_function\_name](#input\_lambda\_function\_name) | The name of the Lambda function to create | `string` | `"guardduty_notify_slack"` | no |
